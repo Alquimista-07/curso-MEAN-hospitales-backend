@@ -6,6 +6,9 @@ const express = require('express');
 // variables de entorno definidas allí.
 require('dotenv').config();
 
+// Importación para contruir el path cuando ya este desplegada la aplicación en producción
+const path = require('path');
+
 // Ahora para los CORS (Cross Domain) es necesario realizar la siguiente importación
 const cors = require('cors');
 
@@ -64,6 +67,15 @@ app.use( '/api/todo', require('./routes/busquedas') );
 
 // Creamos la ruta de la carga de archivos
 app.use( '/api/upload', require('./routes/uploads') );
+
+// Lo último
+// NOTA: Agregamos el comodín para que cuando se encuentre desplegada la aplicación en el servidor
+//       de producción interprete cualquier otra ruta diferente a la especificada en nuestras rutas 
+//       esto para que redireccione al index.
+//       Esto con el fin de que no arroje el error Cannot GET
+app.get('*', ( req, res ) => {
+    res.sendFile( path.resolve( __dirname, 'public/index.html' ) )
+});
 
 // Para levantar el servidor
 app.listen( process.env.PORT, () =>{
